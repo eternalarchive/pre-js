@@ -527,3 +527,350 @@ console.log(person); // {name: "Kim"}
 
 ## 10. 반환문
 
+- 함수는 return 키워드와 반환값으로 이루어진 반환문을 사용하여 실행 결과를 반환(return)할 수 있음
+
+```javascript
+function multiply(x, y) {
+  return x * y; // 값의 반환
+}
+
+// 함수는 반환값으로 평가된다.
+var result = multiply(3, 5);
+
+console.log(result); // 15
+```
+
+- 함수는 return 키워드를 통해 자바스크립트에서 사용 가능한 모든 값을 반환할 수 있음
+- 함수 호출은 표현식
+  - 함수 호출 표현식은 return 키워드가 반환한 값, 즉 반환값으로 평가
+- 반환문의 두 가지 역할
+  - 첫 번째 : 반환문은 함수의 실행을 중단하고 함수 몸체를 빠져나가므로 반환문 이후에 다른 문이 존재하면 그 문은 실행되지 않고 무시됨
+  - 두 번째 : 반환문은 return 키워드 뒤에 지정한 값을 반환하는데, 반환값을 명시적으로 지정하지 않으면 undefined가 반환
+
+- 함수는 반환문 생략 가능 : 함수 몸체의 마지막 문까지 실행한 후 암묵적으로 undefined 반환
+
+- return 키워드와 반환문 사이에 줄바꿈이 있으면 세미콜론 자동 삽입 기능(ASI)에 의해 세미콜론이 추가되어 뒤쪽 문은 무시됨
+
+```javascript
+function multiply(x, y) {
+  // return 키워드와 반환값 사이에 줄바꿈이 있으면
+  return // 세미콜론 자동 삽입 기능(ASI)에 의해 세미콜론이 추가된다.
+  x * y; // 무시된다.
+}
+
+console.log(multiply(3, 5)); // undefined
+```
+
+
+
+## 11. 다양한 함수의 형태
+
+### 11.1 즉시실행함수
+
+- 즉시 실행 함수(IIFE, Immediately Invoke Function Expression) : 함수의 정의와 동시에 즉시 호출되는 함수
+  - 한 번만 호출되며 다시 호출할 수 없음
+  - 함수 이름이 없는 익명 즉시 실행 함수를 사용하는 것이 일반적
+  - 기명 즉시 실행 함수도 사용 가능하지만 함수 이름은 함수 몸체에서만 참조할 수 있는 식별자이므로 실행 함수를 다시 호출할 수 없음
+
+```javascript
+// 익명 즉시 실행 함수
+(function () {
+  var a = 3;
+  var b = 5;
+  return a * b;
+}());
+
+// 기명 즉시 실행 함수
+(function foo() {
+  var a = 3;
+  var b = 5;
+  return a * b;
+}());
+
+foo(); // ReferenceError: foo is not defined
+```
+
+- 즉시 실행 함수는 반드시 그룹 연산자 (...)로 감싸 주어야 함
+
+```javascript
+function () { // ① SyntaxError: Unexpected token (
+  // ...
+}();
+
+function foo() {
+  // ...
+}(); // ② SyntaxError: Unexpected token )
+```
+
+- 두 예제 모두 문법 에러가 발생하지만 에러가 발생하는 지점이 다름
+  - 1에러 : 첫 번째 라인에서 에러 발생. 함수 선언문의 형식이 맞지 않기 때문 - 함수 선언문은 함수 이름을 생략할 수 없음
+  - 2에러 : 마지막 라인에서 에러 발생. 자바스크립트 엔진이 함수 선언문이 끝나는 위치, 즉 함수 코드 블록의 닫는 중괄호 뒤에 암묵적으로 ;를 추가하기 때문
+
+```javascript
+function foo() {}(); // => function foo() {};();
+
+(); // SyntaxError: Unexpected token )
+
+console.log(typeof (function f(){})); // function
+console.log(typeof (function (){}));  // function
+```
+
+- 함수 선언문 뒤의 그룹 연산자 때문에 에러 발생
+
+- 함수 선언문이나 함수 표현식을 그룹 연산자로 감싸면 함수가 평가되어 함수 객체가 됨
+- 따라서 그룹 연산자로 먼저 함수를 평가하여 함수 객체를 생성한 다음 함수를 호출
+  - 그룹 연산자 뿐 아니라 함수를 평가하여 함수 객체를 생성할 수 있는 방법은 다양
+  - 가장 일반적인 방법은 하단의 첫 번째 방식
+
+```javascript
+(function () {
+  // ...
+}());
+
+(function () {
+  // ...
+})();
+
+!function () {
+  // ...
+}();
+
++function () {
+  // ...
+}();
+```
+
+- 즉시 실행 함수는 일반 함수처럼 값을 반환할 수 있고 인수를 전달할 수도 있음
+
+```javascript
+var res = (function () {
+  var a = 3;
+  var b = 5;
+  return a * b;
+}());
+
+console.log(res); // 15
+
+res = (function (a, b) {
+  return a * b;
+}(3, 5));
+
+console.log(res); // 15
+```
+
+- 즉시 실행 함수 내에 코드를 모아 두면 혹시 있을 수도 있는 변수나 함수 이름이 충돌하는 것을 막을 수 있음
+  - 이를 목적으로 즉시 실행 함수를 사용하기도 함(12단원에서 배울 것)
+
+
+
+### 11.2 재귀 함수
+
+- 재귀 호출(recursive call) : 함수가 자기 자신을 호출하는 것
+- 재귀 함수(recursive function) : 자기 자신을 호출하는 행위, 즉 재귀 호출을 수행하는 함수
+- 재귀 호출은 반복 연산을 간단하게 구현할 수 있는데, 예를 들어 팩토리얼은 재귀 호출로 간단히 구현 가능
+
+```javascript
+// 팩토리얼(계승)은 1부터 자신까지의 모든 양의 정수의 곱이다.
+// n! = 1 * 2 * ... * (n-1) * n
+function factorial(n) {
+  // 탈출 조건: n이 1 이하일 때 재귀 호출을 멈춘다.
+  if (n <= 1) return 1;
+  return factorial(n - 1) * n;
+}
+
+console.log(factorial(0)); // 0! = 1
+console.log(factorial(1)); // 1! = 1
+console.log(factorial(2)); // 2! = 1 * 2 = 2
+console.log(factorial(3)); // 3! = 1 * 2 * 3 = 6
+console.log(factorial(4)); // 4! = 1 * 2 * 3 * 4 = 24
+console.log(factorial(5)); // 5! = 1 * 2 * 3 * 4 * 5 = 120
+```
+
+- 재귀 함수는 자신을 무한히 연쇄 호출 하므로 반드시 호출을 멈출 수 있는 탈출 조건을 만들어야 함
+  - 위 함수는 인수가 1 이하일 때 재귀 호출 중지
+  - 탈출 조건이 없는 경우, 함수가 무한 호출되어 stack overflow 에러 발생
+- 재귀 함수 장단점
+  - 장점 : 반복 연산 간단 구현
+  - 단점 : 무한 반복에 빠질 수 있고, 이로 인해 stack overflow 에러 발생 가능
+- 대부분의 재귀 함수는 for문이나 while문으로 구현 가능
+
+```javascript
+// 위쪽의 팩토리얼 예제 반복문으로 구현
+function factorial(n) {
+  if (n <= 1) return 1;
+
+  var res = n;
+  while (--n) res *= n;
+  return res;
+}
+
+console.log(factorial(0)); // 0! = 1
+console.log(factorial(1)); // 1! = 1
+console.log(factorial(2)); // 2! = 1 * 2 = 2
+console.log(factorial(3)); // 3! = 1 * 2 * 3 = 6
+console.log(factorial(4)); // 4! = 1 * 2 * 3 * 4 = 24
+console.log(factorial(5)); // 5! = 1 * 2 * 3 * 4 * 5 = 120
+```
+
+- 재귀 함수는 반복문을 사용하는 것보다 재귀 함수를 사용하는 것이 보다 직관적으로 이해하기 쉬울 때에만 한정적으로 사용하는 것이 바람직
+
+
+
+### 11.3 중첩 함수
+
+- 중첩 함수(nested function) : 함수 내부에 정의된 함수
+  - 내부 함수(Inner function)이라고도 함
+- 일반적으로 중첩 함수는 자신을 포함하는 외부 함수(outer function)를 돕는 헬퍼 함수(helper function)의 역할
+- 아래 예제의 중첩 함수 inner는 자신을 포함하고 있는 외부 함수 outer의 변수에 접근 가능
+  - 그러나 외부 함수는 중첩 함수의 변수에 접근 불가능
+
+```javascript
+function outer() {
+  var x = 1;
+
+  // 중첩 함수
+  function inner() {
+    var y = 2;
+    // 외부 함수의 변수를 참조할 수 있다.
+    console.log(x + y); // 3
+  }
+
+  inner();
+  // 중첩 함수의 변수를 참조할 수 없다.
+  console.log(x + y); // ReferenceError: y is not defined
+}
+
+outer();
+```
+
+- 이와 같은 개념을 스코프라 함(다음장에서)
+
+
+
+### 11.4 콜백 함수
+
+- 자바스크립트의 함수는 일급 객체이므로 함수의 매개 변수에게 함수를 전달할 수 있음
+
+```javascript
+// 콜백 함수를 전달받는 함수
+function print(f) {
+  var string = 'Hello';
+  // 콜백 함수를 전달받는 함수가 콜백 함수의 호출 시기를 결정하고 호출
+  return f(string);
+}
+
+// print 함수에 콜백 함수를 전달하면서 호출
+var res1 = print(function (str) {
+  return str.toUpperCase();
+});
+
+// print 함수에 콜백 함수를 전달하면서 호출
+var res2 = print(function (str) {
+  return str.toLowerCase();
+});
+
+console.log(res1, res2); // HELLO hello
+```
+
+- print 함수는 함수를 인수로 전달 받음
+  -> print 함수에 인수로 전달된 함수는 print 함수가 호출할 시기를 결정하여 호출
+  - 이 때 print 함수에 인수로 전달된 함수 : 콜백 함수(Callback function)
+- 콜백 함수는 콜백 함수를 인수로 전달 받은 함수가 호출 시점을 결정하여 호출
+- 콜백 함수가 콜백 함수를 전달받는 함수 내부에만 호출된다면 콜백 함수를 익명 함수 리터럴로 정의하면서 인수로 곧바로 전달하는 것이 일반적
+  - 이 때 콜백 함수로서 전달된 함수 리터럴은 콜백 함수를 전달받은 함수가 호출될 때 평가되어 생성됨
+
+```javascript
+// 익명 함수 리터럴을 전달. print 함수를 호출할 때 마다 콜백 함수가 생성된다.
+var res = print(function (str) {
+  return str.toUpperCase(); // HELLO
+});
+
+console.log(res); // HELLO
+```
+
+- 단, 콜백 함수를 다른 곳에서도 호출할 필요가 있거나, 콜백 함수를 전달받는 함수가 자주 호출된다면 함수 외부에서 콜백 함수를 정의한 후 콜백 함수를 전달하는 편이 효율적
+
+```javascript
+// toUpperCase 함수는 단 한번만 생성된다.
+var toUpperCase = function (str) {
+  return str.toUpperCase();
+};
+
+// 콜백 함수를 전달
+var res = print(toUpperCase);
+console.log(res); // HELLO
+```
+
+- 이 예제의 toUpperCase 함수는 단 한 번만 생성
+  - 하지만 콜백 함수를 익명 함수 리터럴로 정의하면서 인수로 곧바로 전달하면 콕백 함수를 전달받는 함수가 호출될 때 마다 콜백 함수가 생성
+- 중첩 함수가 외부 함수를 돕는 헬퍼 함수의 역할을 하는 것처럼 콜백 함수는 함수에 전달되어 헬퍼 함수의 역할을 함
+  - 단, 중첩 함수는 고정되어 있어서 교체할 수 없지만 콜백 함수는 외부에서 인수로 주입하기 때문에 자유롭게 교체할 수 있는 장점 존재
+
+```javascript
+// 콜백 함수를 사용하지 않으면 함수를 분리해야 한다.
+function printToUpperCase() {
+  var string = 'Hello';
+  return string.toUpperCase();
+}
+
+console.log(printToUpperCase()); // HELLO
+
+function printToLowerCase() {
+  var string = 'Hello';
+  return string.toLowerCase();
+}
+
+console.log(printToLowerCase()); // hello
+
+// 콜백 함수를 외부에서 전달하면 콜백 함수에 따라 다양한 동작을 하는 함수를 만들 수 있다.
+function print(f) {
+  var string = 'Hello';
+  return f(string);
+}
+
+console.log(print(function (str) {
+  return str.toUpperCase();
+})); // HELLO
+
+console.log(print(function (str) {
+  return str.toLowerCase();
+})); // hello
+```
+
+- 콜백 함수는 비동기 처리를 위해 사용하는 일반적인 패턴으로 주로 이벤트 처리나 Ajax 통신에 사용
+
+```javascript
+// 콜백 함수를 사용한 이벤트 처리
+// myButton 버튼을 클릭하면 콜백 함수를 실행한다.
+document.getElementById('myButton').addEventListener('click', function () {
+  console.log('button clicked!');
+});
+
+// 콜백 함수를 사용한 비동기 처리
+// 1초 후에 메시지를 출력한다.
+setTimeout(function () {
+  console.log('1초 경과');
+}, 1000);
+```
+
+- 콜백 함수는 고차 함수(Higher-order Function)에서도 사용하는 패턴으로 사용 빈도가 매우 높고 중요한 패턴
+
+```javascript
+// 콜백 함수를 사용하는 고차 함수 map
+var res = [1, 2, 3].map(function (item) {
+  return item * 2;
+});
+
+console.log(res); // [ 2, 4, 6 ]
+
+// 콜백 함수를 사용하는 고차 함수 filter
+res = [1, 2, 3].filter(function (item) {
+  return item % 2;
+});
+
+console.log(res); // [ 1, 3 ]
+```
+
+
+
+모든 출처 : https://poiemaweb.com/
