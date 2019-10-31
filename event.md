@@ -494,6 +494,8 @@ elem.addEventListener('click', foo);      // 이벤트 발생 시까지 대기�
 
 - 캡처링은 IE8 이하에서 지원되지 않음
 
+> 출처 [www.w3.org/TR/DOM-Level-3-Events](https://www.w3.org/TR/DOM-Level-3-Events/#dom-event-architecture)
+
 ![event flow](https://poiemaweb.com/img/eventflow.svg)
 
 - **addEventListener 메소드의 세번째 매개변수에 true를 설정하면 캡처링으로 전파되는 이벤트를 캐치하고 false 또는 미설정하면 버블링으로 전파되는 이벤트를 캐치**
